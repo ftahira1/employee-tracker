@@ -1,10 +1,10 @@
-const connection = require('./lib/connection');
+const db = require('./lib/connection');
 const inquirer = require('inquirer');
 const Table = require('table');
 const figlet = require('figlet');
 const validate = require('./lib/validate');
 
-connection.connect((error) => {
+db.connect((error) => {
     figlet("Employee\nTracker", function (err, data) {
         if (err) {
           console.log("Something went wrong...");
@@ -16,7 +16,7 @@ connection.connect((error) => {
       })
     }); 
     
-function prompUser ()  {
+const prompUser = () => {
     inquirer.prompt([
         {
           name: 'choices',
@@ -27,7 +27,6 @@ function prompUser ()  {
             'View All Roles',
             'View All Departments',
             'View All Employees By Department',
-            'View Department Budgets',
             'Update Employee Role',
             'Update Employee Manager',
             'Add Employee',
@@ -42,33 +41,35 @@ function prompUser ()  {
       ])
       .then((answers) => {
         const {choices} = answers;
+        console.log(choices);
   
           if (choices === 'View All Employees') {
-              viewAllEmployees();
+              viewAllEmp();
+            // console.log("here")
           }
   
           if (choices === 'View All Departments') {
-            viewAllDepartments();
+            viewAllDept();
         }
   
           if (choices === 'View All Employees By Department') {
-              viewEmployeesByDepartment();
+              viewEmpByDept();
           }
   
           if (choices === 'Add Employee') {
-              addEmployee();
+              addEmp();
           }
   
           if (choices === 'Remove Employee') {
-              removeEmployee();
+              removeEmp();
           }
   
           if (choices === 'Update Employee Role') {
-              updateEmployeeRole();
+              updateEmpRole();
           }
   
           if (choices === 'Update Employee Manager') {
-              updateEmployeeManager();
+              updateEmpMng();
           }
   
           if (choices === 'View All Roles') {
@@ -84,19 +85,87 @@ function prompUser ()  {
           }
   
           if (choices === 'Add Department') {
-              addDepartment();
-          }
-  
-          if (choices === 'View Department Budgets') {
-              viewDepartmentBudget();
+              addDept();
           }
   
           if (choices === 'Remove Department') {
-              removeDepartment();
+              removeDept();
           }
   
           if (choices === 'Exit') {
-              connection.end();
+              db.end();
           }
 })
 };
+
+//========================-VIEW-====================
+
+const viewAllEmp = () => {
+    console.log("here");
+    prompUser();
+    };
+
+const viewAllDept = () => {
+    console.log("here");
+    prompUser();
+    };
+
+const viewAllRoles = () => {
+    console.log("here");
+    prompUser();
+    };
+
+const viewEmpByDept = () => {
+    console.log("here");
+    prompUser();
+    };
+
+
+//=========================-ADD-====================
+
+const addEmp = () => {
+    console.log("here");
+    prompUser();
+    };
+
+const addDept = () => {
+    console.log("here");
+    prompUser();
+    };
+
+const addRole = () => {
+    console.log("here");
+    prompUser();
+    };
+
+
+//======================-Update-======================
+
+const updateEmpRole = () => {
+    console.log("here");
+    prompUser();
+    };
+
+const updateEmpMng = () => {
+    console.log("here");
+    prompUser();
+    };
+
+
+//==================-Remove-===========================
+
+const removeEmp = () => {
+    console.log("here");
+    prompUser();
+    };
+
+const removeRole = () => {
+    console.log("here");
+    prompUser();
+    };
+
+const removeDept = () => {
+    console.log("here");
+    prompUser();
+    };
+
