@@ -113,23 +113,74 @@ const viewAllRoles = () => {
     })
     };
 
-const viewEmpByDept = () => {
-    console.log("here");
-    db.query('SELECT * FROM employees', (error, response) => {
-        if (error) throw error;
-        console.table(response);
-        prompUser();
-    })
-    };
-
 
 //=========================-ADD-====================
 
 const addEmp = () => {
     console.log("here");
+    inquirer.prompt([
+    {
+          name: 'firstname',
+          type: 'input',
+          message: 'What is the employees first name?',
+    },
+    {
+        name: 'lastname',
+        type: 'input',
+        message: 'What is the employees last name?',
+  }
+]) 
+    .then((info) => {
+        const addition = [info.firstname, info.lastname];
+        console.log(addition);
+        db.query(`SELECT roles.id, roles.title 
+        FROM roles`,(error, response) => {
+        if (error) throw error;
+        console.log(response);
+        const role = response.map(({ id, title})=>({ name: title, value: id}));
+        inquirer.prompt([
+                {
+                  type: 'list',
+                  name: 'role',
+                  message: "What is the employee's role?",
+                  choices: role
+                }
+              ])
+            .then((answers) => {
+            console.log(answers);
+            const rl = answers.role;
+            addition.push(rl);
+            db.query(`SELECT * 
+            FROM employees`,(error, data) => {
+            if (error) throw error;
+            console.log(data);   
+            const managers = data.map(({ id, first_name, last_name}) => ({ name: first_name + " " + last_name, value: id}));
+            inquirer.prompt([
+                {
+                  type: 'list',
+                  name: 'manager',
+                  message: "Who is the employee's manager?",
+                  choices: managers
+                }
+              ])
+                .then((answers) => {
+                    console.log(answers);
+                    const manager = answers.manager;
+                    addition.push(manager);
+                    db.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id)
+                    VALUES (?, ?, ?, ?)`,addition, (error,) => {
+                    if (error) throw error;
+                    console.log("Employee has ben added!")
+                    viewAllEmp();
 
-    prompUser();
-    };
+                })   
+            }) 
+        })
+    // prompUser();
+    })
+})
+})
+};
 
 const addDept = () => {
     console.log("here");
@@ -145,8 +196,10 @@ const addDept = () => {
         db.query(`INSERT INTO departments (name)
         VALUES ('${choices}')`,(error, response) => {
             if (error) throw error;
-            console.table(response)});
+            console.log('Department has been added!')});
+            viewAllDept();
     })
+// prompUser()
 };
 
 const addRole = () => {
