@@ -1,10 +1,23 @@
-const db = require('./lib/connection');
+// const db = require('./lib/connection');
 const inquirer = require('inquirer');
-const Table = require('table');
+const table = require('table');
 const figlet = require('figlet');
-const validate = require('./lib/validate');
+const express = require('express');
+const mysql = require('mysql2')
 
-db.connect((error) => {
+const db = mysql.createConnection(
+    {
+      host: '127.0.0.1',
+      // MySQL username,
+      user: 'root',
+      // TODO: Add MySQL password here
+      password: 'shba2015',
+      database: 'emp_db'
+    },
+    console.log(`Connected to the movies_db database.`)
+  );
+
+function init() {
     figlet("Employee\nTracker", function (err, data) {
         if (err) {
           console.log("Something went wrong...");
@@ -14,7 +27,8 @@ db.connect((error) => {
         console.log(data);
         prompUser();
       })
-    }); 
+    }; 
+    init();
     
 const prompUser = () => {
     inquirer.prompt([
@@ -26,14 +40,11 @@ const prompUser = () => {
             'View All Employees',
             'View All Roles',
             'View All Departments',
-            'View All Employees By Department',
-            'Update Employee Role',
-            'Update Employee Manager',
             'Add Employee',
             'Add Role',
             'Add Department',
+            'Update Employee Role',
             'Remove Employee',
-            'Remove Role',
             'Remove Department',
             'Exit'
             ]
@@ -45,51 +56,26 @@ const prompUser = () => {
   
           if (choices === 'View All Employees') {
               viewAllEmp();
-            // console.log("here")
           }
+
+          if (choices === 'View All Roles') {
+            viewAllRoles();
+        }
   
           if (choices === 'View All Departments') {
             viewAllDept();
         }
   
-          if (choices === 'View All Employees By Department') {
-              viewEmpByDept();
-          }
-  
           if (choices === 'Add Employee') {
               addEmp();
-          }
-  
-          if (choices === 'Remove Employee') {
-              removeEmp();
-          }
-  
-          if (choices === 'Update Employee Role') {
-              updateEmpRole();
-          }
-  
-          if (choices === 'Update Employee Manager') {
-              updateEmpMng();
-          }
-  
-          if (choices === 'View All Roles') {
-              viewAllRoles();
           }
   
           if (choices === 'Add Role') {
               addRole();
           }
   
-          if (choices === 'Remove Role') {
-              removeRole();
-          }
-  
           if (choices === 'Add Department') {
               addDept();
-          }
-  
-          if (choices === 'Remove Department') {
-              removeDept();
           }
   
           if (choices === 'Exit') {
@@ -102,22 +88,38 @@ const prompUser = () => {
 
 const viewAllEmp = () => {
     console.log("here");
-    prompUser();
+    db.query('SELECT * FROM employees', (error, response) => {
+        if (error) throw error;
+        console.table(response);
+        prompUser();
+    })
     };
 
 const viewAllDept = () => {
     console.log("here");
-    prompUser();
+    db.query('SELECT * FROM departments', (error, response) => {
+        if (error) throw error;
+        console.table(response);
+        prompUser();
+    })
     };
 
 const viewAllRoles = () => {
     console.log("here");
-    prompUser();
+    db.query('SELECT * FROM roles', (error, response) => {
+        if (error) throw error;
+        console.table(response);
+        prompUser();
+    })
     };
 
 const viewEmpByDept = () => {
     console.log("here");
-    prompUser();
+    db.query('SELECT * FROM employees', (error, response) => {
+        if (error) throw error;
+        console.table(response);
+        prompUser();
+    })
     };
 
 
@@ -125,47 +127,31 @@ const viewEmpByDept = () => {
 
 const addEmp = () => {
     console.log("here");
+
     prompUser();
     };
 
 const addDept = () => {
     console.log("here");
-    prompUser();
-    };
+    inquirer.prompt([
+        {
+          name: 'choices',
+          type: 'input',
+          message: 'Please name the department you want to add:',
+    }]) 
+    .then((info) => {
+        const {choices} = info
+        console.log(choices);
+        db.query(`INSERT INTO departments (name)
+        VALUES ('${choices}')`,(error, response) => {
+            if (error) throw error;
+            console.table(response)});
+    })
+};
 
 const addRole = () => {
     console.log("here");
     prompUser();
     };
 
-
-//======================-Update-======================
-
-const updateEmpRole = () => {
-    console.log("here");
-    prompUser();
-    };
-
-const updateEmpMng = () => {
-    console.log("here");
-    prompUser();
-    };
-
-
-//==================-Remove-===========================
-
-const removeEmp = () => {
-    console.log("here");
-    prompUser();
-    };
-
-const removeRole = () => {
-    console.log("here");
-    prompUser();
-    };
-
-const removeDept = () => {
-    console.log("here");
-    prompUser();
-    };
 
