@@ -52,7 +52,7 @@ const prompUser = () => {
       ])
       .then((answers) => {
         const {choices} = answers;
-        console.log(choices);
+        // console.log(choices);
   
           if (choices === 'View All Employees') {
               viewAllEmp();
@@ -87,7 +87,7 @@ const prompUser = () => {
 //========================-VIEW-====================
 
 const viewAllEmp = () => {
-    console.log("here");
+    // console.log("here");
     db.query('SELECT * FROM employees', (error, response) => {
         if (error) throw error;
         console.table(response);
@@ -96,7 +96,7 @@ const viewAllEmp = () => {
     };
 
 const viewAllDept = () => {
-    console.log("here");
+    // console.log("here");
     db.query('SELECT * FROM departments', (error, response) => {
         if (error) throw error;
         console.table(response);
@@ -105,7 +105,7 @@ const viewAllDept = () => {
     };
 
 const viewAllRoles = () => {
-    console.log("here");
+    // console.log("here");
     db.query('SELECT * FROM roles', (error, response) => {
         if (error) throw error;
         console.table(response);
@@ -117,7 +117,7 @@ const viewAllRoles = () => {
 //=========================-ADD-====================
 
 const addEmp = () => {
-    console.log("here");
+    // console.log("here");
     inquirer.prompt([
     {
           name: 'firstname',
@@ -132,11 +132,11 @@ const addEmp = () => {
 ]) 
     .then((info) => {
         const addition = [info.firstname, info.lastname];
-        console.log(addition);
+        // console.log(addition);
         db.query(`SELECT roles.id, roles.title 
         FROM roles`,(error, response) => {
         if (error) throw error;
-        console.log(response);
+        // console.log(response);
         const role = response.map(({ id, title})=>({ name: title, value: id}));
         inquirer.prompt([
                 {
@@ -147,13 +147,13 @@ const addEmp = () => {
                 }
               ])
             .then((answers) => {
-            console.log(answers);
+            // console.log(answers);
             const rl = answers.role;
             addition.push(rl);
             db.query(`SELECT * 
             FROM employees`,(error, data) => {
             if (error) throw error;
-            console.log(data);   
+            // console.log(data);   
             const managers = data.map(({ id, first_name, last_name}) => ({ name: first_name + " " + last_name, value: id}));
             inquirer.prompt([
                 {
@@ -164,7 +164,7 @@ const addEmp = () => {
                 }
               ])
                 .then((answers) => {
-                    console.log(answers);
+                    // console.log(answers);
                     const manager = answers.manager;
                     addition.push(manager);
                     db.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id)
@@ -183,7 +183,7 @@ const addEmp = () => {
 };
 
 const addDept = () => {
-    console.log("here");
+    // console.log("here");
     inquirer.prompt([
         {
           name: 'choices',
@@ -192,19 +192,63 @@ const addDept = () => {
     }]) 
     .then((info) => {
         const {choices} = info
-        console.log(choices);
+        // console.log(choices);
         db.query(`INSERT INTO departments (name)
         VALUES ('${choices}')`,(error, response) => {
             if (error) throw error;
             console.log('Department has been added!')});
             viewAllDept();
     })
-// prompUser()
+
 };
 
 const addRole = () => {
-    console.log("here");
-    prompUser();
+    // console.log("here");
+    db.query(`SELECT * 
+    FROM departments`,(error, response) => {
+    if (error) throw (error);
+    // console.log(response);
+    const deptNames = response.map(({id, name}) => ({name: name, value: id}));
+    console.log(deptNames);
+    inquirer.prompt([
+        {
+            name: 'departmentName',
+            type: 'list',
+            message: 'Which department is this new role in?',
+            choices: deptNames 
+        }
+    ])
+    .then((answers) => {
+        const roleData = [answers.departmentName];
+        // console.log(roleData);
+        inquirer.prompt([
+            {
+                  name: 'name',
+                  type: 'input',
+                  message: 'What is the name of the role?',
+            },
+            {
+                name: 'salary',
+                type: 'input',
+                message: 'What is the salary for the role?',
+          }
+        ])
+        .then((answers) => {
+            // console.log(answers);
+            roleData.push(answers.name, answers.salary);
+            // console.log(roleData);
+            db.query(`INSERT INTO roles (department_id, title, salary)
+            VALUES (?, ?, ?)`,roleData, (error,) => {
+            if (error) throw error;
+            console.log("Role has ben added!")
+            viewAllRoles();
+            
+        })
+
+        }) 
+    })
+
+    })
     };
 
 
