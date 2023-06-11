@@ -77,6 +77,10 @@ const prompUser = () => {
           if (choices === 'Add Department') {
               addDept();
           }
+
+          if (choices === 'Update Employee Role') {
+            updateEmpRole();
+          }
   
           if (choices === 'Exit') {
               db.end();
@@ -138,6 +142,7 @@ const addEmp = () => {
         if (error) throw error;
         // console.log(response);
         const role = response.map(({ id, title})=>({ name: title, value: id}));
+        role.push('Create role.');
         inquirer.prompt([
                 {
                   type: 'list',
@@ -148,6 +153,9 @@ const addEmp = () => {
               ])
             .then((answers) => {
             // console.log(answers);
+            if (answers.role === 'Create role.') {
+                addRole();
+            } else {
             const rl = answers.role;
             addition.push(rl);
             db.query(`SELECT * 
@@ -175,7 +183,7 @@ const addEmp = () => {
 
                 })   
             }) 
-        })
+        })}
     // prompUser();
     })
 })
@@ -209,7 +217,7 @@ const addRole = () => {
     if (error) throw (error);
     // console.log(response);
     const deptNames = response.map(({id, name}) => ({name: name, value: id}));
-    console.log(deptNames);
+    // console.log(deptNames);
     inquirer.prompt([
         {
             name: 'departmentName',
@@ -238,7 +246,7 @@ const addRole = () => {
             roleData.push(answers.name, answers.salary);
             // console.log(roleData);
             db.query(`INSERT INTO roles (department_id, title, salary)
-            VALUES (?, ?, ?)`,roleData, (error,) => {
+            VALUES (?, ?, ?)`,roleData, (error) => {
             if (error) throw error;
             console.log("Role has ben added!")
             viewAllRoles();
@@ -250,5 +258,53 @@ const addRole = () => {
 
     })
     };
+
+
+//==========================================-UPDATE-=================================
+
+const updateEmpRole = () => {
+    db.query(`SELECT * FROM employees`, (error, data) => {
+        const empNames = data.map(({ id, first_name, last_name}) => ({ name: first_name + " " + last_name, value: id}));
+        inquirer.prompt([
+            {
+                name: 'updateEmp',
+                type: 'list',
+                message: 'Which employee will you choose to update the role?',
+                choices: empNames 
+            }
+        ])
+        .then((answers)=> {
+            console.log(answers);
+            const updateData = [answers.updateEmp];
+            db.query(`SELECT * FROM roles`, (error, data) => {
+                const empRoles = data.map(({id, title})=>({name: title, value: id}));
+                empRoles.push('Create role.');
+
+                inquirer.prompt([
+                    {
+                        name: 'updateRole',
+                        type: 'list',
+                        message: 'Which role will you choose for the employee?',
+                        choices: empRoles
+                    }
+                ])
+                .then((answers) => {
+                    if (answers.updateRole === 'Create role.') {
+                        addRole();
+                    } else {
+                        updateData.push(answers.updateRole);
+                        console.log(updateData);
+                        db.query(`UPDATE employees SET employees.id = ? WHERE employees.role_id = ?`, 
+                        updateData, (error) => {
+                            if (error) throw (error);
+                            console.log('Employee Role Updated!');
+                            viewAllEmp();
+                        })
+                    }
+                })
+            })
+        })
+    })
+}
 
 
