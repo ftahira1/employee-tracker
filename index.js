@@ -1,20 +1,22 @@
 // const db = require('./lib/connection');
+require('dotenv').config();
 const inquirer = require('inquirer');
 const table = require('table');
 const figlet = require('figlet');
 const express = require('express');
-const mysql = require('mysql2')
+const mysql = require('mysql2');
+
 
 const db = mysql.createConnection(
     {
-      host: '127.0.0.1',
+      host: process.env.DB_HOST,
       // MySQL username,
-      user: 'root',
+      user: process.env.DB_USER,
       // TODO: Add MySQL password here
-      password: 'shba2015',
+      password: process.env.DB_PASSWORD,
       database: 'emp_db'
     },
-    console.log(`Connected to the movies_db database.`)
+    console.log(`Connected to the emp_db database.`)
   );
 
 function init() {
