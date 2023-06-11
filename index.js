@@ -46,6 +46,7 @@ const prompUser = () => {
             'Update Employee Role',
             'Remove Employee',
             'Remove Department',
+            'Remove Role',
             'Exit'
             ]
         }
@@ -80,6 +81,18 @@ const prompUser = () => {
 
           if (choices === 'Update Employee Role') {
             updateEmpRole();
+          }
+
+          if (choices === 'Remove Employee') {
+            removeEmp();
+          }
+
+          if (choices === 'Remove Department') {
+            removeDept();
+          }
+
+          if (choices === 'Update Employee Role') {
+            removeRole();
           }
   
           if (choices === 'Exit') {
@@ -305,6 +318,35 @@ const updateEmpRole = () => {
             })
         })
     })
-}
+};
+
+
+//======================================================-Remove-=======================================================
+
+const removeEmp = () => {
+    db.query(`SELECT * FROM employees`, (error, response)=> {
+        if (error) throw (error);
+        const remEmp = response.map(({id, first_name, last_name}) => ({name: first_name + " " + last_name, value: id}));
+        inquirer.prompt([
+            {
+                name: 'removEmp',
+                type: 'list',
+                message: 'Which employee do you want to remove?',
+                choices: remEmp 
+            }
+        ])
+        .then((answers) => {
+            const rEmp = answers.removEmp;
+            console.log(rEmp);
+            db.query(`DELETE FROM employees WHERE id = ${rEmp}`, (error, data)=>{
+                if (error) throw (error);
+                console.log('Employee Successfully Removed');
+                viewAllEmp();
+            })
+        })
+    })
+};
+
+
 
 
