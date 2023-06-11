@@ -349,4 +349,33 @@ const removeEmp = () => {
 
 
 
+const removeDept = () => {
+    db.query(`SELECT * FROM departments`, (error, response)=> {
+        if (error) throw (error);
+        const remDept = response.map(({id, name}) => ({name: name, value: id}));
+        inquirer.prompt([
+            {
+                name: 'removDept',
+                type: 'list',
+                message: 'Which department do you want to remove?',
+                choices: remDept 
+            }
+        ])
+        .then((answers) => {
+            const rDept = answers.removDept;
+            console.log(rDept);
+            db.query(`DELETE FROM departments WHERE id = ${rDept}`, (error, data)=>{
+                if (error) throw (error);
+                console.log('Department Successfully Removed');
+                viewAllEmp();
+            })
+        })
+    })
+};
+
+
+
+
+
+
 
