@@ -17,6 +17,7 @@ CREATE TABLE roles (
     PRIMARY KEY (id),
     FOREIGN KEY (department_id)
         REFERENCES departments(id)
+        
 );
 
 CREATE TABLE employees (
@@ -30,4 +31,13 @@ CREATE TABLE employees (
         REFERENCES roles(id),
     FOREIGN KEY (manager_id)
         REFERENCES employees(id)
+        
 );
+
+
+CREATE TABLE view_roles (
+SELECT roles.id, roles.title, departments.name, roles.salary
+FROM roles
+RIGHT JOIN departments ON departments.id = roles. department_id
+);
+

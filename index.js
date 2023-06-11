@@ -116,7 +116,7 @@ const viewAllEmp = () => {
 
 const viewAllDept = () => {
     // console.log("here");
-    db.query('SELECT * FROM departments', (error, response) => {
+    db.query(`SELECT * FROM departments`, (error, response) => {
         if (error) throw error;
         console.table(response);
         prompUser();
@@ -125,7 +125,7 @@ const viewAllDept = () => {
 
 const viewAllRoles = () => {
     // console.log("here");
-    db.query('SELECT * FROM roles', (error, response) => {
+    db.query('SELECT * FROM view_roles', (error, response) => {
         if (error) throw error;
         console.table(response);
         prompUser();
