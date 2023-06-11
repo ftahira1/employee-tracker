@@ -91,7 +91,7 @@ const prompUser = () => {
             removeDept();
           }
 
-          if (choices === 'Update Employee Role') {
+          if (choices === 'Remove Role') {
             removeRole();
           }
   
@@ -367,14 +367,36 @@ const removeDept = () => {
             db.query(`DELETE FROM departments WHERE id = ${rDept}`, (error, data)=>{
                 if (error) throw (error);
                 console.log('Department Successfully Removed');
-                viewAllEmp();
+                viewAllDept();
             })
         })
     })
 };
 
 
-
+const removeRole = () => {
+    db.query(`SELECT * FROM roles`, (error, response)=> {
+        if (error) throw (error);
+        const remRole = response.map(({id, title}) => ({name: title, value: id}));
+        inquirer.prompt([
+            {
+                name: 'removRole',
+                type: 'list',
+                message: 'Which role do you want to remove?',
+                choices: remRole 
+            }
+        ])
+        .then((answers) => {
+            const rRole = answers.removRole;
+            console.log(rRole);
+            db.query(`DELETE FROM roles WHERE id = ${rRole}`, (error, data)=>{
+                if (error) throw (error);
+                console.log('Role Successfully Removed');
+                viewAllRoles();
+            })
+        })
+    })
+};
 
 
 
