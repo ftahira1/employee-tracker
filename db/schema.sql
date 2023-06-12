@@ -41,3 +41,22 @@ FROM roles
 RIGHT JOIN departments ON departments.id = roles. department_id
 );
 
+CREATE TABLE vw_emp (
+SELECT employees.id, employees.first_name, 
+employees.last_name, view_roles.title, view_roles.name, view_roles.salary
+FROM employees
+JOIN view_roles ON view_roles.id = employees.role_id
+);
+
+CREATE TABLE views (
+SELECT *,CONCAT(first_name,' ',last_name) AS manager
+FROM employees
+);
+
+CREATE TABLE viewAllEmp (
+SELECT vw_emp.id, vw_emp.first_name, vw_emp.last_name, 
+vw_emp.title, vw_emp.name, vw_emp.salary, views.manager
+FROM vw_emp
+LEFT JOIN views ON views.manager_id = vw_emp.id
+);
+

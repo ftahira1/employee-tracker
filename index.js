@@ -107,7 +107,7 @@ const prompUser = () => {
 
 const viewAllEmp = () => {
     // console.log("here");
-    db.query('SELECT * FROM employees', (error, response) => {
+    db.query('SELECT * FROM viewAllEmp', (error, response) => {
         if (error) throw error;
         console.table(response);
         prompUser();
