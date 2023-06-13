@@ -1,6 +1,3 @@
-DROP DATABASE IF EXISTS emp_db;
-CREATE DATABASE emp_db;
-
 USE emp_db;
 
 CREATE TABLE departments (
@@ -17,6 +14,7 @@ CREATE TABLE roles (
     PRIMARY KEY (id),
     FOREIGN KEY (department_id)
         REFERENCES departments(id)
+        ON DELETE CASCADE
         
 );
 
@@ -28,7 +26,8 @@ CREATE TABLE employees (
     manager_id INT DEFAULT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (role_id)
-        REFERENCES roles(id),
+        REFERENCES roles(id)
+        ON DELETE CASCADE,
     FOREIGN KEY (manager_id)
         REFERENCES employees(id)
         
@@ -38,25 +37,12 @@ CREATE TABLE employees (
 CREATE TABLE view_roles (
 SELECT roles.id, roles.title, departments.name, roles.salary
 FROM roles
-RIGHT JOIN departments ON departments.id = roles. department_id
+JOIN departments ON departments.id = roles. department_id
 );
 
-CREATE TABLE vw_emp (
-SELECT employees.id, employees.first_name, 
-employees.last_name, view_roles.title, view_roles.name, view_roles.salary
-FROM employees
-JOIN view_roles ON view_roles.id = employees.role_id
-);
+SELECT * FROM view_roles;
 
-CREATE TABLE views (
-SELECT *,CONCAT(first_name,' ',last_name) AS manager
-FROM employees
-);
-
-CREATE TABLE viewAllEmp (
-SELECT vw_emp.id, vw_emp.first_name, vw_emp.last_name, 
-vw_emp.title, vw_emp.name, vw_emp.salary, views.manager
-FROM vw_emp
-LEFT JOIN views ON views.manager_id = vw_emp.id
-);
-
+SELECT employees.id, employees.first_name, employees.last_name, view_roles.title, view_roles.name, view_roles.salary 
+FROM employees 
+LEFT JOIN view_roles 
+ON view_roles.id = employees.role_id;

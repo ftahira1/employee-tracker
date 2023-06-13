@@ -103,11 +103,14 @@ const prompUser = () => {
 })
 };
 
+
+
+
 //========================-VIEW-====================
 
 const viewAllEmp = () => {
     // console.log("here");
-    db.query('SELECT * FROM viewAllEmp', (error, response) => {
+    db.query('SELECT employees.id, employees.first_name, employees.last_name, view_roles.title, view_roles.name, view_roles.salary FROM employees LEFT JOIN view_roles ON view_roles.id = employees.role_id', (error, response) => {
         if (error) throw error;
         console.table(response);
         prompUser();
@@ -125,7 +128,7 @@ const viewAllDept = () => {
 
 const viewAllRoles = () => {
     // console.log("here");
-    db.query('SELECT * FROM view_roles', (error, response) => {
+    db.query('SELECT roles.id, roles.title, departments.name, roles.salary FROM roles RIGHT JOIN departments ON departments.id = roles. department_id', (error, response) => {
         if (error) throw error;
         console.table(response);
         prompUser();
@@ -190,6 +193,7 @@ const addEmp = () => {
                     // console.log(answers);
                     const manager = answers.manager;
                     addition.push(manager);
+                    console.log(addition);
                     db.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id)
                     VALUES (?, ?, ?, ?)`,addition, (error,) => {
                     if (error) throw error;
@@ -289,7 +293,7 @@ const updateEmpRole = () => {
             }
         ])
         .then((answers)=> {
-            console.log(answers);
+            // console.log(answers);
             const updateData = [answers.updateEmp];
             db.query(`SELECT * FROM roles`, (error, data) => {
                 const empRoles = data.map(({id, title})=>({name: title, value: id}));
@@ -308,9 +312,8 @@ const updateEmpRole = () => {
                         addRole();
                     } else {
                         updateData.push(answers.updateRole);
-                        console.log(updateData);
-                        db.query(`UPDATE employees SET employees.id = ? WHERE employees.role_id = ?`, 
-                        updateData, (error) => {
+                        // console.log(updateData);
+                        db.query(`UPDATE employees SET employees.role_id = ${updateData[1]}  WHERE employees.id = ${updateData[0]}`, (error) => {
                             if (error) throw (error);
                             console.log('Employee Role Updated!');
                             viewAllEmp();
@@ -339,7 +342,7 @@ const removeEmp = () => {
         ])
         .then((answers) => {
             const rEmp = answers.removEmp;
-            console.log(rEmp);
+            // console.log(rEmp);
             db.query(`DELETE FROM employees WHERE id = ${rEmp}`, (error, data)=>{
                 if (error) throw (error);
                 console.log('Employee Successfully Removed');
@@ -365,7 +368,7 @@ const removeDept = () => {
         ])
         .then((answers) => {
             const rDept = answers.removDept;
-            console.log(rDept);
+            // console.log(rDept);
             db.query(`DELETE FROM departments WHERE id = ${rDept}`, (error, data)=>{
                 if (error) throw (error);
                 console.log('Department Successfully Removed');
